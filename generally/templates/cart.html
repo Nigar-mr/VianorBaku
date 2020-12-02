@@ -1,0 +1,143 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="site__body">
+        <div class="block-header block-header--has-breadcrumb block-header--has-title">
+            <div class="container">
+                <div class="block-header__body">
+                    <h1 class="block-header__title">Shopping Cart</h1>
+                </div>
+            </div>
+        </div>
+        <div class="block">
+            <div class="container">
+                <div class="cart">
+                    <div class="cart__table cart-table">
+                        <table class="cart-table__table">
+                            <thead class="cart-table__head">
+                            <tr class="cart-table__row">
+                                <th class="cart-table__column cart-table__column--image">Image</th>
+                                <th class="cart-table__column cart-table__column--product">Product</th>
+                                <th class="cart-table__column cart-table__column--price">Price</th>
+                                <th class="cart-table__column cart-table__column--quantity">Quantity</th>
+                                <th class="cart-table__column cart-table__column--total">Total</th>
+                                <th class="cart-table__column cart-table__column--remove"></th>
+                            </tr>
+                            </thead>
+                            <tbody class="cart-table__body">
+                            {% for list in card_list %}
+                                <tr class="cart-table__row">
+                                    <td class="cart-table__column cart-table__column--image">
+                                        <div class="image image--type--product">
+                                            <a href="product-full.html" class="image__body">
+                                                <img class="image__tag"
+                                                     src="{{ list.product.tyresimage_set.last.images.url }}"
+                                                     alt="">
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--product">
+                                        <a href="" class="cart-table__product-name">{{ list.product.name }}</a>
+                                        <ul class="cart-table__options">
+                                            <li>Width: {{ list.product.width }}</li>
+                                            <li>Height: {{ list.product.height }}</li>
+                                            <li>Radius: {{ list.product.radius }}</li>
+                                        </ul>
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--price" data-title="Price">
+                                        {{ list.product.price }}
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--quantity" data-title="Quantity">
+                                        <div class="cart-table__quantity input-number">
+                                            <form method="POST">
+                                                {% csrf_token %}
+                                                <input price-data="{{ list.product.price }}"
+                                                       quantity-data="{{ list.product_id }}"
+                                                       name="quantity"
+                                                       class="form-control input-number__input quantity"
+                                                       min="1" type="submit"
+                                                       value="{{ list.quantity }}"></form>
+                                            <div class="input-number__add"></div>
+                                            <div class="input-number__sub"></div>
+                                        </div>
+                                    </td>
+                                    <td data-price="{{ list.total_price }}" data-id="{{ list.product_id }}"
+                                        class="cart-table__column cart-table__column--total total total_price"
+                                        data-title="Total">
+                                        {{ list.total_price }} AZN
+                                    </td>
+                                    <td class="cart-table__column cart-table__column--remove">
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <button name="remove" data-id="{{ list.product_id }}" type="button"
+                                                    class="cart-table__remove btn btn-sm btn-icon btn-muted">
+                                                <svg width="12" height="12">
+                                                    <path d="M10.8,10.8L10.8,10.8c-0.4,0.4-1,0.4-1.4,0L6,7.4l-3.4,3.4c-0.4,0.4-1,0.4-1.4,0l0,0c-0.4-0.4-0.4-1,0-1.4L4.6,6L1.2,2.6
+	c-0.4-0.4-0.4-1,0-1.4l0,0c0.4-0.4,1-0.4,1.4,0L6,4.6l3.4-3.4c0.4-0.4,1-0.4,1.4,0l0,0c0.4,0.4,0.4,1,0,1.4L7.4,6l3.4,3.4
+	C11.2,9.8,11.2,10.4,10.8,10.8z"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cart__totals">
+                        <div class="card">
+                            <div class="card-body card-body--padding--2">
+                                <h3 class="card-title">Cart Totals</h3>
+                                <table class="cart__totals-table">
+
+                                    <tr>
+                                        <th>Total</th>
+                                        <td>{{ total }} AZN</td>
+                                    </tr>
+                                </table>
+                                <a class="btn btn-primary btn-xl btn-block" href="{% url 'checkout' %}">
+                                    Proceed to checkout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="block-space block-space--layout--before-footer"></div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+
+            $('.quantity').change(function () {
+                quantity = parseInt($(this).val())
+                price = parseInt($(this).attr('price-data'))
+                namee = $(this).attr('name')
+                data_id = $(this).attr('quantity-data')
+                $.ajax({
+                    method: 'POST',
+                    data: {
+                        'quantity': quantity,
+                        'namee': namee,
+                        'price': price,
+                        'data_id': data_id,
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function () {
+                        location.reload()
+                        console.log('success')
+                    },
+                    error: function () {
+                        location.reload()
+                        console.log('errorr')
+                    }
+                })
+            })
+
+        })
+    </script>
+{% endblock %}

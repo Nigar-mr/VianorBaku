@@ -1,0 +1,70 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <div class="site__body">
+        <div class="block-header block-header--has-breadcrumb block-header--has-title">
+            <div class="container">
+                <div class="block-header__body">
+                    <h1 class="block-header__title">Checkout</h1>
+                </div>
+            </div>
+        </div>
+        <div class="checkout block">
+            <div class="container container--max--xl">
+                <div class="row">
+                    <div class="col-12 col-lg-6 col-xl-7">
+                        <div class="card mb-lg-0">
+                            <div class="card-body card-body--padding--2">
+                                <h3 class="card-title">Billing details</h3>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="form-row">
+
+                                        {% for form in order_form %}
+                                            <div class="form-group col-md-6">
+                                                <label for="{{ form.id_for_label }}">{{ form.label }}</label>
+                                                {{ form }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-xl btn-block">Order</button>
+                                </form>
+                            </div>
+                            <div class="card-divider"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 col-xl-5 mt-4 mt-lg-0">
+                        <div class="card mb-0">
+                            <div class="card-body card-body--padding--2">
+                                <h3 class="card-title">Your Order</h3>
+                                <table class="checkout__totals">
+                                    <thead class="checkout__totals-header">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="checkout__totals-products">
+                                    {% for order_item in order %}
+                                        <tr>
+                                            <td>{{ order_item.product.name }} × {{ order_item.quantity }}</td>
+                                            <td>{{ order_item.total_price }} AZN</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot class="checkout__totals-footer">
+                                    <tr>
+                                        <th>Total</th>
+                                        <td>{{ total }} AZN</td>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="block-space block-space--layout--before-footer"></div>
+    </div>
+{% endblock %}
